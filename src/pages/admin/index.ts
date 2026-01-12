@@ -1,0 +1,14 @@
+export { AdminDashboardPage } from "./AdminDashboardPage";
+export { BranchesPage } from "./BranchesPage";
+export { RegionsPage } from "./RegionsPage";
+export { LanguagesPage } from "./LanguagesPage";
+export { CoursesPage } from "./CoursesPage";
+export { HolidaysPage } from "./HolidaysPage";
+export { SchedulePage } from "./SchedulePage";
+export { StudentsPage } from "./StudentsPage";
+export { EmployeesPage } from "./EmployeesPage";
+export { GroupsPage } from "./GroupsPage";
+export { MentorsPage } from "./MentorsPage";
+export { NewsPage } from "./NewsPage";
+export { RolesPage } from "./RolesPage";
+export { ClassroomsPage } from "./ClassroomsPage";

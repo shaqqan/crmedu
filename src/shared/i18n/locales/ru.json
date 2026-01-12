@@ -1,0 +1,77 @@
+{
+  "common": {
+    "search": "Поиск",
+    "add": "Добавить",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "close": "Закрыть",
+    "loading": "Загрузка...",
+    "noData": "Данные не найдены",
+    "actions": "Действия",
+    "yes": "Да",
+    "no": "Нет",
+    "all": "Все",
+    "filter": "Фильтр",
+    "reset": "Сбросить",
+    "export": "Экспорт",
+    "import": "Импорт"
+  },
+  "auth": {
+    "login": "Войти",
+    "logout": "Выйти",
+    "register": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "forgotPassword": "Забыли пароль?",
+    "rememberMe": "Запомнить меня"
+  },
+  "navigation": {
+    "dashboard": "Панель управления",
+    "regions": "Регионы",
+    "branches": "Филиалы",
+    "settings": "Настройки",
+    "profile": "Профиль"
+  },
+  "regions": {
+    "title": "Регионы",
+    "name": "Название",
+    "parent": "Родительский регион",
+    "type": "Тип",
+    "region": "Область",
+    "district": "Район",
+    "addRegion": "Добавить регион",
+    "editRegion": "Редактировать регион",
+    "deleteRegion": "Удалить регион",
+    "deleteConfirm": "Вы действительно хотите удалить этот регион?"
+  },
+  "branches": {
+    "title": "Филиалы",
+    "name": "Название",
+    "address": "Адрес",
+    "phone": "Телефон",
+    "region": "Регион",
+    "addBranch": "Добавить филиал",
+    "editBranch": "Редактировать филиал",
+    "deleteBranch": "Удалить филиал",
+    "deleteConfirm": "Вы действительно хотите удалить этот филиал?"
+  },
+  "validation": {
+    "required": "Это поле обязательно",
+    "email": "Неверный формат email",
+    "minLength": "Минимум {{min}} символов",
+    "maxLength": "Максимум {{max}} символов"
+  },
+  "notifications": {
+    "success": "Успешно",
+    "error": "Ошибка",
+    "warning": "Предупреждение",
+    "info": "Информация",
+    "createSuccess": "Успешно создано",
+    "updateSuccess": "Успешно обновлено",
+    "deleteSuccess": "Успешно удалено"
+  }
+}

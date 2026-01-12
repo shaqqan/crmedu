@@ -1,0 +1,77 @@
+{
+  "common": {
+    "search": "Qidirish",
+    "add": "Qo'shish",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "confirm": "Tasdiqlash",
+    "close": "Yopish",
+    "loading": "Yuklanmoqda...",
+    "noData": "Ma'lumot topilmadi",
+    "actions": "Amallar",
+    "yes": "Ha",
+    "no": "Yo'q",
+    "all": "Hammasi",
+    "filter": "Filtr",
+    "reset": "Tozalash",
+    "export": "Eksport",
+    "import": "Import"
+  },
+  "auth": {
+    "login": "Kirish",
+    "logout": "Chiqish",
+    "register": "Ro'yxatdan o'tish",
+    "email": "Email",
+    "password": "Parol",
+    "confirmPassword": "Parolni tasdiqlash",
+    "forgotPassword": "Parolni unutdingizmi?",
+    "rememberMe": "Eslab qolish"
+  },
+  "navigation": {
+    "dashboard": "Boshqaruv paneli",
+    "regions": "Hududlar",
+    "branches": "Filiallar",
+    "settings": "Sozlamalar",
+    "profile": "Profil"
+  },
+  "regions": {
+    "title": "Hududlar",
+    "name": "Nomi",
+    "parent": "Yuqori hudud",
+    "type": "Turi",
+    "region": "Viloyat",
+    "district": "Tuman",
+    "addRegion": "Hudud qo'shish",
+    "editRegion": "Hududni tahrirlash",
+    "deleteRegion": "Hududni o'chirish",
+    "deleteConfirm": "Haqiqatan ham bu hududni o'chirmoqchimisiz?"
+  },
+  "branches": {
+    "title": "Filiallar",
+    "name": "Nomi",
+    "address": "Manzil",
+    "phone": "Telefon",
+    "region": "Hudud",
+    "addBranch": "Filial qo'shish",
+    "editBranch": "Filialni tahrirlash",
+    "deleteBranch": "Filialni o'chirish",
+    "deleteConfirm": "Haqiqatan ham bu filialni o'chirmoqchimisiz?"
+  },
+  "validation": {
+    "required": "Bu maydon to'ldirilishi shart",
+    "email": "Email formati noto'g'ri",
+    "minLength": "Kamida {{min}} ta belgi bo'lishi kerak",
+    "maxLength": "Ko'pi bilan {{max}} ta belgi bo'lishi kerak"
+  },
+  "notifications": {
+    "success": "Muvaffaqiyatli",
+    "error": "Xatolik",
+    "warning": "Ogohlantirish",
+    "info": "Ma'lumot",
+    "createSuccess": "Muvaffaqiyatli yaratildi",
+    "updateSuccess": "Muvaffaqiyatli yangilandi",
+    "deleteSuccess": "Muvaffaqiyatli o'chirildi"
+  }
+}
