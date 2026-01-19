@@ -241,7 +241,7 @@ export const MentorSalaryPage: React.FC = () => {
             </Stack>
 
             <Stack spacing={2}>
-              {weeklyBreakdown.map((week, index) => (
+              {weeklyBreakdown.map((week) => (
                 <Paper
                   key={week.week}
                   elevation={0}
