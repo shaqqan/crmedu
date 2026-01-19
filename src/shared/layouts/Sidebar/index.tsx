@@ -46,7 +46,7 @@ import type { Permission, Role } from "@/shared/config/rbac";
 import { roleNames } from "@/shared/config/rbac";
 
 const DRAWER_WIDTH = 310;
-const COLLAPSED_WIDTH = 88;
+const COLLAPSED_WIDTH = 100;
 
 interface MenuItem {
   text: string;
@@ -265,39 +265,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {filteredMenuItems.map((item) => (
           <React.Fragment key={item.text}>
             <ListItem disablePadding>
-              <Tooltip title={collapsed && !item.children ? item.text : ""} placement="right" arrow>
-                <ListItemButton
-                  selected={item.path ? location.pathname === item.path : false}
-                  onClick={(e) => {
-                    if (item.children) {
-                      if (collapsed) {
-                        handlePopoverOpen(e, item);
-                      } else {
-                        handleToggleMenu(item.text);
-                      }
-                    } else if (item.path) {
-                      navigate(item.path);
-                      if (variant === "temporary") onClose();
+              <ListItemButton
+                selected={item.path ? location.pathname === item.path : false}
+                onClick={(e) => {
+                  if (item.children) {
+                    if (collapsed) {
+                      handlePopoverOpen(e, item);
+                    } else {
+                      handleToggleMenu(item.text);
                     }
-                  }}
-                  sx={{
-                    ...listItemButtonStyles,
-                    justifyContent: collapsed ? "center" : "flex-start",
-                    px: collapsed ? 1 : 2,
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: collapsed ? 0 : 36, justifyContent: "center" }}>
-                    {item.icon}
-                  </ListItemIcon>
-                  {!collapsed && <ListItemText primary={item.text} />}
-                  {!collapsed && item.children &&
-                    (isMenuOpen(item.text) ? (
-                      <ArrowUp2 size={18} color="currentColor" />
-                    ) : (
-                      <ArrowDown2 size={18} color="currentColor" />
-                    ))}
-                </ListItemButton>
-              </Tooltip>
+                  } else if (item.path) {
+                    navigate(item.path);
+                    if (variant === "temporary") onClose();
+                  }
+                }}
+                sx={{
+                  ...listItemButtonStyles,
+                  flexDirection: collapsed ? "column" : "row",
+                  alignItems: "center",
+                  justifyContent: collapsed ? "center" : "flex-start",
+                  px: collapsed ? 0.5 : 2,
+                  py: collapsed ? 1.5 : 1,
+                  gap: collapsed ? 0.5 : 0,
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: collapsed ? 0 : 36, justifyContent: "center" }}>
+                  {item.icon}
+                </ListItemIcon>
+                {collapsed ? (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: 10,
+                      textAlign: "center",
+                      lineHeight: 1.2,
+                      maxWidth: "100%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {item.text}
+                  </Typography>
+                ) : (
+                  <ListItemText primary={item.text} />
+                )}
+                {!collapsed && item.children &&
+                  (isMenuOpen(item.text) ? (
+                    <ArrowUp2 size={18} color="currentColor" />
+                  ) : (
+                    <ArrowDown2 size={18} color="currentColor" />
+                  ))}
+              </ListItemButton>
             </ListItem>
             {!collapsed && item.children && (
               <Collapse in={isMenuOpen(item.text)} timeout="auto" unmountOnExit>
