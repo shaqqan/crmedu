@@ -2,18 +2,21 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import { Outlet } from "react-router";
 import { Header } from "../Header";
-import { Sidebar, SIDEBAR_WIDTH } from "../Sidebar";
+import { Sidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from "../Sidebar";
 
 export const MainLayout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const currentSidebarWidth = sidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+
   return (
     <Box sx={{ display: "flex", height: "100dvh", overflow: "hidden" }}>
-      <Header onMenuClick={handleDrawerToggle} />
+      <Header onMenuClick={handleDrawerToggle} sidebarWidth={currentSidebarWidth} />
 
       {/* Mobile sidebar */}
       <Sidebar
@@ -23,23 +26,31 @@ export const MainLayout: React.FC = () => {
       />
 
       {/* Desktop sidebar */}
-      <Sidebar open={true} onClose={() => {}} variant="permanent" />
+      <Sidebar
+        open={true}
+        onClose={() => {}}
+        variant="permanent"
+        collapsed={sidebarCollapsed}
+        onCollapsedChange={setSidebarCollapsed}
+      />
 
       {/* Main content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { md: `calc(100% - ${SIDEBAR_WIDTH}px)` },
-          height: "100%",
+          width: { md: `calc(100% - ${currentSidebarWidth}px)` },
+          height: "100vh",
           overflowY: "auto",
           boxSizing: "border-box",
-          mt: 8,
+          p: 3,
+          transition: "width 0.3s ease",
         }}
       >
-        <Outlet />
+        <Box sx={{ mt: 8 }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};

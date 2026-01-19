@@ -9,9 +9,9 @@ const baseTheme = {
   },
   palette: {
     primary: {
-      main: "#0065FF",
-      light: "#4A8AF0",
-      dark: "#0D4BB3",
+      main: "#DA4957",
+      light: "#E47582",
+      dark: "#B03A47",
       contrastText: "#FFFFFF",
     },
     secondary: {

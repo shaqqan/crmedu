@@ -33,15 +33,22 @@ import {
   Clock,
   DollarCircle,
   LanguageSquare,
+  Hierarchy,
+  ArrowRight3,
 } from "iconsax-react";
 
 // Course status
 type CourseStatus = "active" | "inactive" | "draft";
 
+// Course type
+type CourseType = "online" | "offline" | "videocourse";
+
 // Course interface
 interface Course {
   id: string;
   name: string;
+  parentId: string | null; // Parent course ID for hierarchy
+  type: CourseType;
   language: string;
   level: string;
   duration: number; // in months
@@ -53,6 +60,20 @@ interface Course {
   studentsCount: number;
   groupsCount: number;
 }
+
+// Course type labels
+const courseTypeLabels: Record<CourseType, string> = {
+  online: "Онлайн",
+  offline: "Оффлайн",
+  videocourse: "Видеокурс",
+};
+
+// Course type colors
+const courseTypeColors: Record<CourseType, string> = {
+  online: "#1264EB",
+  offline: "#4CAF50",
+  videocourse: "#FF9800",
+};
 
 // Languages
 const languages = [
@@ -70,151 +91,290 @@ const levels = ["A1", "A2", "B1", "B2", "C1", "C2", "IELTS", "TOEFL"];
 
 // Mock courses data
 const initialCourses: Course[] = [
+  // Parent courses (no parentId)
   {
     id: "1",
-    name: "English Beginner",
+    name: "Backend Development",
+    parentId: null,
+    type: "offline",
+    language: "Английский",
+    level: "B1",
+    duration: 6,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 2000000,
+    description: "Основы бэкенд разработки",
+    status: "active",
+    studentsCount: 245,
+    groupsCount: 12,
+  },
+  {
+    id: "2",
+    name: "Frontend Development",
+    parentId: null,
+    type: "offline",
+    language: "Английский",
+    level: "B1",
+    duration: 5,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1800000,
+    description: "Основы фронтенд разработки",
+    status: "active",
+    studentsCount: 189,
+    groupsCount: 9,
+  },
+  {
+    id: "3",
+    name: "Mobile Development",
+    parentId: null,
+    type: "online",
+    language: "Английский",
+    level: "B1",
+    duration: 6,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 2200000,
+    description: "Мобильная разработка",
+    status: "active",
+    studentsCount: 134,
+    groupsCount: 7,
+  },
+  {
+    id: "4",
+    name: "English Course",
+    parentId: null,
+    type: "offline",
     language: "Английский",
     level: "A1",
     duration: 3,
     lessonsPerWeek: 3,
     lessonDuration: 90,
     price: 800000,
-    description: "Курс английского языка для начинающих",
+    description: "Курсы английского языка",
+    status: "active",
+    studentsCount: 456,
+    groupsCount: 20,
+  },
+  // Backend children
+  {
+    id: "5",
+    name: "Java",
+    parentId: "1",
+    type: "offline",
+    language: "Английский",
+    level: "B1",
+    duration: 6,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 2000000,
+    description: "Java backend разработка",
+    status: "active",
+    studentsCount: 89,
+    groupsCount: 4,
+  },
+  {
+    id: "6",
+    name: "Python",
+    parentId: "1",
+    type: "offline",
+    language: "Английский",
+    level: "B1",
+    duration: 5,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1900000,
+    description: "Python backend разработка",
+    status: "active",
+    studentsCount: 78,
+    groupsCount: 4,
+  },
+  {
+    id: "7",
+    name: "Node.js",
+    parentId: "1",
+    type: "online",
+    language: "Английский",
+    level: "B1",
+    duration: 4,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1800000,
+    description: "Node.js backend разработка",
+    status: "active",
+    studentsCount: 56,
+    groupsCount: 3,
+  },
+  {
+    id: "8",
+    name: "Go",
+    parentId: "1",
+    type: "videocourse",
+    language: "Английский",
+    level: "B2",
+    duration: 4,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 2100000,
+    description: "Go backend разработка",
+    status: "draft",
+    studentsCount: 0,
+    groupsCount: 0,
+  },
+  // Frontend children
+  {
+    id: "9",
+    name: "React",
+    parentId: "2",
+    type: "offline",
+    language: "Английский",
+    level: "B1",
+    duration: 4,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1700000,
+    description: "React frontend разработка",
+    status: "active",
+    studentsCount: 98,
+    groupsCount: 5,
+  },
+  {
+    id: "10",
+    name: "Vue.js",
+    parentId: "2",
+    type: "online",
+    language: "Английский",
+    level: "B1",
+    duration: 4,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1600000,
+    description: "Vue.js frontend разработка",
+    status: "active",
+    studentsCount: 45,
+    groupsCount: 2,
+  },
+  {
+    id: "11",
+    name: "Angular",
+    parentId: "2",
+    type: "videocourse",
+    language: "Английский",
+    level: "B1",
+    duration: 5,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1800000,
+    description: "Angular frontend разработка",
+    status: "inactive",
+    studentsCount: 23,
+    groupsCount: 1,
+  },
+  // Mobile children
+  {
+    id: "12",
+    name: "Flutter",
+    parentId: "3",
+    type: "online",
+    language: "Английский",
+    level: "B1",
+    duration: 5,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 2000000,
+    description: "Flutter мобильная разработка",
+    status: "active",
+    studentsCount: 67,
+    groupsCount: 3,
+  },
+  {
+    id: "13",
+    name: "React Native",
+    parentId: "3",
+    type: "online",
+    language: "Английский",
+    level: "B1",
+    duration: 4,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 1900000,
+    description: "React Native мобильная разработка",
+    status: "active",
+    studentsCount: 45,
+    groupsCount: 2,
+  },
+  {
+    id: "14",
+    name: "Swift (iOS)",
+    parentId: "3",
+    type: "videocourse",
+    language: "Английский",
+    level: "B2",
+    duration: 6,
+    lessonsPerWeek: 3,
+    lessonDuration: 120,
+    price: 2400000,
+    description: "iOS разработка на Swift",
+    status: "draft",
+    studentsCount: 0,
+    groupsCount: 0,
+  },
+  // English children
+  {
+    id: "15",
+    name: "English Beginner",
+    parentId: "4",
+    type: "offline",
+    language: "Английский",
+    level: "A1",
+    duration: 3,
+    lessonsPerWeek: 3,
+    lessonDuration: 90,
+    price: 800000,
+    description: "Английский для начинающих",
     status: "active",
     studentsCount: 156,
     groupsCount: 8,
   },
   {
-    id: "2",
-    name: "English Elementary",
-    language: "Английский",
-    level: "A2",
-    duration: 3,
-    lessonsPerWeek: 3,
-    lessonDuration: 90,
-    price: 900000,
-    description: "Курс английского языка для продолжающих",
-    status: "active",
-    studentsCount: 134,
-    groupsCount: 7,
-  },
-  {
-    id: "3",
+    id: "16",
     name: "English Intermediate",
+    parentId: "4",
+    type: "online",
     language: "Английский",
     level: "B1",
     duration: 4,
     lessonsPerWeek: 3,
     lessonDuration: 90,
     price: 1000000,
-    description: "Курс английского языка среднего уровня",
+    description: "Английский средний уровень",
     status: "active",
-    studentsCount: 98,
-    groupsCount: 5,
+    studentsCount: 134,
+    groupsCount: 7,
   },
   {
-    id: "4",
-    name: "English Upper-Intermediate",
-    language: "Английский",
-    level: "B2",
-    duration: 4,
-    lessonsPerWeek: 3,
-    lessonDuration: 90,
-    price: 1100000,
-    description: "Курс английского языка выше среднего",
-    status: "active",
-    studentsCount: 67,
-    groupsCount: 4,
-  },
-  {
-    id: "5",
+    id: "17",
     name: "IELTS Preparation",
+    parentId: "4",
+    type: "offline",
     language: "Английский",
     level: "IELTS",
     duration: 3,
     lessonsPerWeek: 4,
     lessonDuration: 120,
     price: 1500000,
-    description: "Подготовка к экзамену IELTS",
+    description: "Подготовка к IELTS",
     status: "active",
     studentsCount: 89,
     groupsCount: 5,
-  },
-  {
-    id: "6",
-    name: "Korean Beginner",
-    language: "Корейский",
-    level: "A1",
-    duration: 4,
-    lessonsPerWeek: 3,
-    lessonDuration: 90,
-    price: 900000,
-    description: "Курс корейского языка для начинающих",
-    status: "active",
-    studentsCount: 112,
-    groupsCount: 6,
-  },
-  {
-    id: "7",
-    name: "Korean Elementary",
-    language: "Корейский",
-    level: "A2",
-    duration: 4,
-    lessonsPerWeek: 3,
-    lessonDuration: 90,
-    price: 1000000,
-    description: "Курс корейского языка для продолжающих",
-    status: "active",
-    studentsCount: 78,
-    groupsCount: 4,
-  },
-  {
-    id: "8",
-    name: "German Beginner",
-    language: "Немецкий",
-    level: "A1",
-    duration: 4,
-    lessonsPerWeek: 3,
-    lessonDuration: 90,
-    price: 850000,
-    description: "Курс немецкого языка для начинающих",
-    status: "active",
-    studentsCount: 67,
-    groupsCount: 4,
-  },
-  {
-    id: "9",
-    name: "French Beginner",
-    language: "Французский",
-    level: "A1",
-    duration: 4,
-    lessonsPerWeek: 2,
-    lessonDuration: 90,
-    price: 750000,
-    description: "Курс французского языка для начинающих",
-    status: "inactive",
-    studentsCount: 23,
-    groupsCount: 2,
-  },
-  {
-    id: "10",
-    name: "Japanese Beginner",
-    language: "Японский",
-    level: "A1",
-    duration: 6,
-    lessonsPerWeek: 2,
-    lessonDuration: 90,
-    price: 950000,
-    description: "Курс японского языка для начинающих",
-    status: "draft",
-    studentsCount: 0,
-    groupsCount: 0,
   },
 ];
 
 interface CourseFormData {
   id?: string;
   name: string;
+  parentId: string | null;
+  type: CourseType;
   language: string;
   level: string;
   duration: number;
@@ -227,6 +387,8 @@ interface CourseFormData {
 
 const initialFormData: CourseFormData = {
   name: "",
+  parentId: null,
+  type: "offline",
   language: "",
   level: "",
   duration: 3,
@@ -259,6 +421,25 @@ export const CoursesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterLanguage, setFilterLanguage] = useState("");
   const [filterStatus, setFilterStatus] = useState<CourseStatus | "">("");
+  const [filterType, setFilterType] = useState<CourseType | "">("");
+  const [filterParent, setFilterParent] = useState<string>("");
+
+  // Get parent courses (courses without parentId)
+  const parentCourses = useMemo(() => {
+    return courses.filter((c) => c.parentId === null);
+  }, [courses]);
+
+  // Get children count for a parent course
+  const getChildrenCount = (parentId: string) => {
+    return courses.filter((c) => c.parentId === parentId).length;
+  };
+
+  // Get parent course name
+  const getParentName = (parentId: string | null) => {
+    if (!parentId) return null;
+    const parent = courses.find((c) => c.id === parentId);
+    return parent?.name || null;
+  };
 
   // Dialog states
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -269,9 +450,9 @@ export const CoursesPage: React.FC = () => {
   const [formData, setFormData] = useState<CourseFormData>(initialFormData);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  // Filter courses
+  // Filter and organize courses hierarchically
   const filteredCourses = useMemo(() => {
-    return courses.filter((course) => {
+    const filtered = courses.filter((course) => {
       const matchesSearch =
         course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.language.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -279,10 +460,35 @@ export const CoursesPage: React.FC = () => {
 
       const matchesLanguage = !filterLanguage || course.language === filterLanguage;
       const matchesStatus = !filterStatus || course.status === filterStatus;
+      const matchesType = !filterType || course.type === filterType;
+      const matchesParent = !filterParent ||
+        course.id === filterParent ||
+        course.parentId === filterParent;
 
-      return matchesSearch && matchesLanguage && matchesStatus;
+      return matchesSearch && matchesLanguage && matchesStatus && matchesType && matchesParent;
     });
-  }, [courses, searchQuery, filterLanguage, filterStatus]);
+
+    // Organize hierarchically: parents first, then their children
+    const organized: Course[] = [];
+    const parents = filtered.filter((c) => c.parentId === null);
+    const children = filtered.filter((c) => c.parentId !== null);
+
+    parents.forEach((parent) => {
+      organized.push(parent);
+      const parentChildren = children.filter((c) => c.parentId === parent.id);
+      organized.push(...parentChildren);
+    });
+
+    // Add orphan children (whose parent is not in filtered list)
+    const addedIds = new Set(organized.map((c) => c.id));
+    children.forEach((child) => {
+      if (!addedIds.has(child.id)) {
+        organized.push(child);
+      }
+    });
+
+    return organized;
+  }, [courses, searchQuery, filterLanguage, filterStatus, filterParent]);
 
   // Open add dialog
   const handleAddClick = () => {
@@ -312,6 +518,8 @@ export const CoursesPage: React.FC = () => {
     setFormData({
       id: course.id,
       name: course.name,
+      parentId: course.parentId,
+      type: course.type,
       language: course.language,
       level: course.level,
       duration: course.duration,
@@ -337,6 +545,8 @@ export const CoursesPage: React.FC = () => {
     const newCourse: Course = {
       id: String(Date.now()),
       name: formData.name,
+      parentId: formData.parentId,
+      type: formData.type,
       language: formData.language,
       level: formData.level,
       duration: formData.duration,
@@ -363,6 +573,8 @@ export const CoursesPage: React.FC = () => {
           ? {
               ...c,
               name: formData.name,
+              parentId: formData.parentId,
+              type: formData.type,
               language: formData.language,
               level: formData.level,
               duration: formData.duration,
@@ -390,9 +602,11 @@ export const CoursesPage: React.FC = () => {
     setSearchQuery("");
     setFilterLanguage("");
     setFilterStatus("");
+    setFilterType("");
+    setFilterParent("");
   };
 
-  const hasFilters = searchQuery || filterLanguage || filterStatus;
+  const hasFilters = searchQuery || filterLanguage || filterStatus || filterType || filterParent;
 
   return (
     <Box>
@@ -461,6 +675,36 @@ export const CoursesPage: React.FC = () => {
             </Select>
           </FormControl>
 
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Тип</InputLabel>
+            <Select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as CourseType | "")}
+              label="Тип"
+            >
+              <MenuItem value="">Все типы</MenuItem>
+              <MenuItem value="offline">Оффлайн</MenuItem>
+              <MenuItem value="online">Онлайн</MenuItem>
+              <MenuItem value="videocourse">Видеокурс</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>Родительский курс</InputLabel>
+            <Select
+              value={filterParent}
+              onChange={(e) => setFilterParent(e.target.value)}
+              label="Родительский курс"
+            >
+              <MenuItem value="">Все курсы</MenuItem>
+              {parentCourses.map((course) => (
+                <MenuItem key={course.id} value={course.id}>
+                  {course.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           {hasFilters && (
             <Button variant="outlined" color="error" size="small" onClick={handleClearFilters}>
               Сбросить
@@ -483,6 +727,7 @@ export const CoursesPage: React.FC = () => {
             <TableHead>
               <TableRow sx={{ bgcolor: "#F9FAFB" }}>
                 <TableCell sx={{ fontWeight: 600 }}>Название</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Тип</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Язык</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Уровень</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Длительность</TableCell>
@@ -495,31 +740,77 @@ export const CoursesPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCourses.map((course) => (
+              {filteredCourses.map((course) => {
+                const isChild = course.parentId !== null;
+                const childrenCount = getChildrenCount(course.id);
+                const parentName = getParentName(course.parentId);
+
+                return (
                 <TableRow
                   key={course.id}
-                  sx={{ "&:hover": { bgcolor: "#F9FAFB" } }}
+                  sx={{
+                    "&:hover": { bgcolor: "#F9FAFB" },
+                    bgcolor: isChild ? "rgba(0, 0, 0, 0.02)" : "transparent",
+                  }}
                 >
                   <TableCell>
                     <Stack direction="row" alignItems="center" spacing={1.5}>
+                      {/* Indent for child courses */}
+                      {isChild && (
+                        <Box sx={{ pl: 2, display: "flex", alignItems: "center" }}>
+                          <ArrowRight3 size={16} color="#9CA3AF" />
+                        </Box>
+                      )}
                       <Box
                         sx={{
                           p: 1,
                           borderRadius: 1.5,
-                          bgcolor: "rgba(18, 100, 235, 0.1)",
+                          bgcolor: isChild
+                            ? "rgba(156, 163, 175, 0.1)"
+                            : "rgba(18, 100, 235, 0.1)",
                         }}
                       >
-                        <Book1 size={20} color="#1264EB" />
+                        {isChild ? (
+                          <Book1 size={20} color="#6B7280" />
+                        ) : (
+                          <Hierarchy size={20} color="#1264EB" />
+                        )}
                       </Box>
                       <Box>
-                        <Typography variant="body2" fontWeight={500}>
-                          {course.name}
-                        </Typography>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Typography variant="body2" fontWeight={isChild ? 400 : 600}>
+                            {course.name}
+                          </Typography>
+                          {!isChild && childrenCount > 0 && (
+                            <Chip
+                              label={`${childrenCount} подкурсов`}
+                              size="small"
+                              sx={{
+                                height: 20,
+                                fontSize: 11,
+                                bgcolor: "primary.main",
+                                color: "white",
+                              }}
+                            />
+                          )}
+                        </Stack>
                         <Typography variant="caption" color="text.secondary">
+                          {isChild && parentName ? `${parentName} → ` : ""}
                           {course.groupsCount} групп
                         </Typography>
                       </Box>
                     </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={courseTypeLabels[course.type]}
+                      size="small"
+                      sx={{
+                        bgcolor: `${courseTypeColors[course.type]}15`,
+                        color: courseTypeColors[course.type],
+                        fontWeight: 500,
+                      }}
+                    />
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" alignItems="center" spacing={1}>
@@ -578,10 +869,11 @@ export const CoursesPage: React.FC = () => {
                     </Stack>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
               {filteredCourses.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">Курсы не найдены</Typography>
                   </TableCell>
                 </TableRow>
@@ -604,6 +896,46 @@ export const CoursesPage: React.FC = () => {
               required
               placeholder="Например: English Beginner"
             />
+
+            <Stack direction="row" spacing={2}>
+              <FormControl fullWidth>
+                <InputLabel>Родительский курс</InputLabel>
+                <Select
+                  value={formData.parentId || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      parentId: e.target.value === "" ? null : e.target.value,
+                    }))
+                  }
+                  label="Родительский курс"
+                >
+                  <MenuItem value="">
+                    <em>Нет (основной курс)</em>
+                  </MenuItem>
+                  {parentCourses.map((course) => (
+                    <MenuItem key={course.id} value={course.id}>
+                      {course.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth required>
+                <InputLabel>Тип курса</InputLabel>
+                <Select
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, type: e.target.value as CourseType }))
+                  }
+                  label="Тип курса"
+                >
+                  <MenuItem value="offline">Оффлайн</MenuItem>
+                  <MenuItem value="online">Онлайн</MenuItem>
+                  <MenuItem value="videocourse">Видеокурс</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
 
             <Stack direction="row" spacing={2}>
               <FormControl fullWidth required>
@@ -730,6 +1062,43 @@ export const CoursesPage: React.FC = () => {
         <DialogContent>
           {selectedCourse && (
             <Stack spacing={2} sx={{ mt: 1 }}>
+              {selectedCourse.parentId && (
+                <Box sx={{ p: 1.5, bgcolor: "#F3F4F6", borderRadius: 2 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Родительский курс
+                  </Typography>
+                  <Typography variant="body1" fontWeight={500}>
+                    {getParentName(selectedCourse.parentId)}
+                  </Typography>
+                </Box>
+              )}
+              {getChildrenCount(selectedCourse.id) > 0 && (
+                <Box sx={{ p: 1.5, bgcolor: "rgba(18, 100, 235, 0.08)", borderRadius: 2 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Подкурсы
+                  </Typography>
+                  <Typography variant="body1" fontWeight={500} color="primary">
+                    {getChildrenCount(selectedCourse.id)} подкурсов
+                  </Typography>
+                </Box>
+              )}
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  Тип курса
+                </Typography>
+                <Box sx={{ mt: 0.5 }}>
+                  <Chip
+                    label={courseTypeLabels[selectedCourse.type]}
+                    size="small"
+                    sx={{
+                      bgcolor: `${courseTypeColors[selectedCourse.type]}15`,
+                      color: courseTypeColors[selectedCourse.type],
+                      fontWeight: 500,
+                    }}
+                  />
+                </Box>
+              </Box>
+
               <Stack direction="row" spacing={2}>
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="caption" color="text.secondary">
@@ -831,6 +1200,48 @@ export const CoursesPage: React.FC = () => {
               fullWidth
               required
             />
+
+            <Stack direction="row" spacing={2}>
+              <FormControl fullWidth>
+                <InputLabel>Родительский курс</InputLabel>
+                <Select
+                  value={formData.parentId || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      parentId: e.target.value === "" ? null : e.target.value,
+                    }))
+                  }
+                  label="Родительский курс"
+                >
+                  <MenuItem value="">
+                    <em>Нет (основной курс)</em>
+                  </MenuItem>
+                  {parentCourses
+                    .filter((c) => c.id !== formData.id) // Exclude self
+                    .map((course) => (
+                      <MenuItem key={course.id} value={course.id}>
+                        {course.name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth required>
+                <InputLabel>Тип курса</InputLabel>
+                <Select
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, type: e.target.value as CourseType }))
+                  }
+                  label="Тип курса"
+                >
+                  <MenuItem value="offline">Оффлайн</MenuItem>
+                  <MenuItem value="online">Онлайн</MenuItem>
+                  <MenuItem value="videocourse">Видеокурс</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
 
             <Stack direction="row" spacing={2}>
               <FormControl fullWidth required>

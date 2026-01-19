@@ -1,4 +1,12 @@
 export { MentorDashboardPage } from "./MentorDashboardPage";
 export { MentorGroupsPage } from "./MentorGroupsPage";
+export { MentorGroupDetailPage } from "./MentorGroupDetailPage";
 export { MentorStudentsPage } from "./MentorStudentsPage";
 export { MentorSchedulePage } from "./MentorSchedulePage";
+export { MentorAttendancePage } from "./MentorAttendancePage";
+export { MentorAttendanceHistoryPage } from "./MentorAttendanceHistoryPage";
+export { MentorGradingPage } from "./MentorGradingPage";
+export { MentorSalaryPage } from "./MentorSalaryPage";
+export { MentorSalaryHistoryPage } from "./MentorSalaryHistoryPage";
+export { MentorSalaryInfoPage } from "./MentorSalaryInfoPage";
+export { MentorProfilePage } from "./MentorProfilePage";

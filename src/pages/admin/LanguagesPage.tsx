@@ -1,33 +1,26 @@
 import React, { useState, useMemo } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Chip from "@mui/material/Chip";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Tooltip from "@mui/material/Tooltip";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, StatItem } from "@/shared/ui";
 import {
-  Add,
-  SearchNormal1,
+  Box,
+  Stack,
+  Typography,
+  Chip,
+  IconButton,
+  FormControl,
+  Select,
+  MenuItem,
+  Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  InputLabel,
+  TextField,
+  Button,
+  FormControlLabel,
+} from "@mui/material";
+import {
   Edit2,
   Trash,
   Eye,
@@ -237,6 +230,37 @@ export const LanguagesPage: React.FC = () => {
   const totalStudents = languages.reduce((sum, l) => sum + l.studentsCount, 0);
   const totalCourses = languages.reduce((sum, l) => sum + l.coursesCount, 0);
 
+  const stats: StatItem[] = [
+    {
+      id: "total",
+      title: "Всего языков",
+      value: languages.length,
+      icon: <LanguageSquare size={20} color="#1264EB" />,
+      bgColor: "rgba(18, 100, 235, 0.1)",
+    },
+    {
+      id: "active",
+      title: "Активных",
+      value: activeCount,
+      icon: <LanguageSquare size={20} color="#4CAF50" />,
+      bgColor: "rgba(76, 175, 80, 0.1)",
+    },
+    {
+      id: "courses",
+      title: "Курсов",
+      value: totalCourses,
+      icon: <Book1 size={20} color="#FF9800" />,
+      bgColor: "rgba(255, 152, 0, 0.1)",
+    },
+    {
+      id: "students",
+      title: "Студентов",
+      value: totalStudents,
+      icon: <Profile2User size={20} color="#E91E63" />,
+      bgColor: "rgba(233, 30, 99, 0.1)",
+    },
+  ];
+
   // Open add dialog
   const handleAddClick = () => {
     setFormData(initialFormData);
@@ -336,13 +360,104 @@ export const LanguagesPage: React.FC = () => {
     handleDialogClose();
   };
 
-  // Clear filters
-  const handleClearFilters = () => {
-    setSearchQuery("");
-    setFilterStatus("all");
-  };
+  const columns: GridColDef<Language>[] = [
+    {
+      field: "name",
+      headerName: "Язык",
+      flex: 1,
+      minWidth: 200,
+      renderCell: ({ row }) => (
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <Typography variant="h5" sx={{ lineHeight: 1 }}>
+            {row.flag}
+          </Typography>
+          <Box>
+            <Typography variant="body2" fontWeight={500}>
+              {row.name}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {row.nativeName}
+            </Typography>
+          </Box>
+        </Stack>
+      ),
+    },
+    {
+      field: "code",
+      headerName: "Код",
+      width: 100,
+      renderCell: ({ value }) => (
+        <Chip label={value.toUpperCase()} size="small" variant="outlined" />
+      ),
+    },
+    {
+      field: "coursesCount",
+      headerName: "Курсы",
+      width: 100,
+      renderCell: ({ value }) => (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Book1 size={16} color="#6B7280" />
+          <Typography variant="body2">{value}</Typography>
+        </Stack>
+      ),
+    },
+    {
+      field: "studentsCount",
+      headerName: "Студенты",
+      width: 120,
+      renderCell: ({ value }) => (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Profile2User size={16} color="#6B7280" />
+          <Typography variant="body2">{value}</Typography>
+        </Stack>
+      ),
+    },
+    {
+      field: "isActive",
+      headerName: "Статус",
+      width: 100,
+      renderCell: ({ row }) => (
+        <Switch
+          checked={row.isActive}
+          onChange={() => handleToggleStatus(row)}
+          size="small"
+          color="success"
+        />
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "",
+      width: 120,
+      sortable: false,
+      renderCell: ({ row }) => (
+        <Stack direction="row" spacing={0.5}>
+          <IconButton size="small" onClick={() => handleView(row)}>
+            <Eye size={18} color="#1264EB" />
+          </IconButton>
+          <IconButton size="small" onClick={() => handleEdit(row)}>
+            <Edit2 size={18} color="#FF9800" />
+          </IconButton>
+          <IconButton size="small" color="error" onClick={() => handleDeleteClick(row)}>
+            <Trash size={18} />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
 
-  const hasFilters = searchQuery || filterStatus !== "all";
+  const renderFilters = () => (
+    <FormControl size="small" sx={{ minWidth: 150 }}>
+      <Select
+        value={filterStatus}
+        onChange={(e) => setFilterStatus(e.target.value as "all" | "active" | "inactive")}
+      >
+        <MenuItem value="all">Все</MenuItem>
+        <MenuItem value="active">Активные</MenuItem>
+        <MenuItem value="inactive">Неактивные</MenuItem>
+      </Select>
+    </FormControl>
+  );
 
   return (
     <Box>
@@ -350,224 +465,19 @@ export const LanguagesPage: React.FC = () => {
         <Typography variant="h4" fontWeight={600}>
           Языки
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} color="#FFFFFF" />}
-          onClick={handleAddClick}
-        >
-          Добавить язык
-        </Button>
       </Stack>
 
-      {/* Stats */}
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mb={3}>
-        <Paper sx={{ p: 2, borderRadius: 3, flex: 1 }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(18, 100, 235, 0.1)" }}>
-              <LanguageSquare size={24} color="#1264EB" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {languages.length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Всего языков
-              </Typography>
-            </Box>
-          </Stack>
-        </Paper>
-        <Paper sx={{ p: 2, borderRadius: 3, flex: 1 }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(76, 175, 80, 0.1)" }}>
-              <LanguageSquare size={24} color="#4CAF50" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {activeCount}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Активных
-              </Typography>
-            </Box>
-          </Stack>
-        </Paper>
-        <Paper sx={{ p: 2, borderRadius: 3, flex: 1 }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(255, 152, 0, 0.1)" }}>
-              <Book1 size={24} color="#FF9800" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {totalCourses}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Курсов
-              </Typography>
-            </Box>
-          </Stack>
-        </Paper>
-        <Paper sx={{ p: 2, borderRadius: 3, flex: 1 }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(233, 30, 99, 0.1)" }}>
-              <Profile2User size={24} color="#E91E63" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {totalStudents}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Студентов
-              </Typography>
-            </Box>
-          </Stack>
-        </Paper>
-      </Stack>
-
-      {/* Filters */}
-      <Paper sx={{ p: 2, mb: 3, borderRadius: 3 }}>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={2}
-          alignItems={{ xs: "stretch", sm: "center" }}
-        >
-          <TextField
-            placeholder="Поиск по названию..."
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ minWidth: 250 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchNormal1 size={20} color="#6B7280" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Статус</InputLabel>
-            <Select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as "all" | "active" | "inactive")}
-              label="Статус"
-            >
-              <MenuItem value="all">Все</MenuItem>
-              <MenuItem value="active">Активные</MenuItem>
-              <MenuItem value="inactive">Неактивные</MenuItem>
-            </Select>
-          </FormControl>
-
-          {hasFilters && (
-            <Button variant="outlined" color="error" size="small" onClick={handleClearFilters}>
-              Сбросить
-            </Button>
-          )}
-
-          <Chip
-            label={`${filteredLanguages.length} языков`}
-            color="primary"
-            size="small"
-            sx={{ ml: "auto" }}
-          />
-        </Stack>
-      </Paper>
-
-      {/* Languages Table */}
-      <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: "#F9FAFB" }}>
-                <TableCell sx={{ fontWeight: 600 }}>Язык</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Код</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Курсы</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Студенты</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Статус</TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="right">
-                  Действия
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredLanguages.map((language) => (
-                <TableRow key={language.id} sx={{ "&:hover": { bgcolor: "#F9FAFB" } }}>
-                  <TableCell>
-                    <Stack direction="row" alignItems="center" spacing={2}>
-                      <Typography variant="h5" sx={{ lineHeight: 1 }}>
-                        {language.flag}
-                      </Typography>
-                      <Box>
-                        <Typography variant="body2" fontWeight={500}>
-                          {language.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {language.nativeName}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={language.code.toUpperCase()} size="small" variant="outlined" />
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Book1 size={16} color="#6B7280" />
-                      <Typography variant="body2">{language.coursesCount}</Typography>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Profile2User size={16} color="#6B7280" />
-                      <Typography variant="body2">{language.studentsCount}</Typography>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={language.isActive}
-                      onChange={() => handleToggleStatus(language)}
-                      size="small"
-                      color="success"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                      <Tooltip title="Просмотр">
-                        <IconButton size="small" onClick={() => handleView(language)}>
-                          <Eye size={18} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Редактировать">
-                        <IconButton size="small" onClick={() => handleEdit(language)}>
-                          <Edit2 size={18} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Удалить">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => handleDeleteClick(language)}
-                        >
-                          <Trash size={18} />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filteredLanguages.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography color="text.secondary">Языки не найдены</Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+      <DataTable
+        rows={filteredLanguages}
+        columns={columns}
+        stats={stats}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Поиск по названию..."
+        addButtonText="Добавить язык"
+        onAddClick={handleAddClick}
+        renderFilters={renderFilters}
+      />
 
       {/* Add Language Dialog */}
       <Dialog open={addDialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
@@ -702,7 +612,7 @@ export const LanguagesPage: React.FC = () => {
               </Box>
 
               <Stack direction="row" spacing={2}>
-                <Paper sx={{ p: 2, flex: 1, bgcolor: "#F9FAFB", borderRadius: 2 }}>
+                <Box sx={{ p: 2, flex: 1, bgcolor: "#F9FAFB", borderRadius: 2 }}>
                   <Stack direction="row" alignItems="center" spacing={1}>
                     <Book1 size={20} color="#1264EB" />
                     <Box>
@@ -714,8 +624,8 @@ export const LanguagesPage: React.FC = () => {
                       </Typography>
                     </Box>
                   </Stack>
-                </Paper>
-                <Paper sx={{ p: 2, flex: 1, bgcolor: "#F9FAFB", borderRadius: 2 }}>
+                </Box>
+                <Box sx={{ p: 2, flex: 1, bgcolor: "#F9FAFB", borderRadius: 2 }}>
                   <Stack direction="row" alignItems="center" spacing={1}>
                     <Profile2User size={20} color="#E91E63" />
                     <Box>
@@ -727,7 +637,7 @@ export const LanguagesPage: React.FC = () => {
                       </Typography>
                     </Box>
                   </Stack>
-                </Paper>
+                </Box>
               </Stack>
             </Stack>
           )}

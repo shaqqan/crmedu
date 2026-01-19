@@ -1,10 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, StatItem } from "@/shared/ui";
 import {
   Box,
   Stack,
-  TextField,
-  InputAdornment,
   Typography,
   Chip,
   Avatar,
@@ -20,13 +19,11 @@ import {
   Grid2 as Grid,
 } from "@mui/material";
 import {
-  SearchNormal1,
   Profile2User,
   Eye,
   CloseCircle,
   TickCircle,
   Calendar,
-  Book1,
   Chart,
 } from "iconsax-react";
 
@@ -226,6 +223,52 @@ export const MentorStudentsPage: React.FC = () => {
     myStudents.reduce((acc, s) => acc + s.avgScore, 0) / totalStudents
   );
 
+  const stats: StatItem[] = [
+    {
+      id: "total",
+      title: "Всего студентов",
+      value: totalStudents,
+      icon: <Profile2User size={20} color="#1264EB" />,
+      bgColor: "rgba(18, 100, 235, 0.1)",
+    },
+    {
+      id: "active",
+      title: "Активных",
+      value: activeStudents,
+      icon: <TickCircle size={20} color="#4CAF50" />,
+      bgColor: "rgba(76, 175, 80, 0.1)",
+    },
+    {
+      id: "attendance",
+      title: "Ср. посещаемость",
+      value: `${avgAttendance}%`,
+      icon: <Calendar size={20} color="#FF9800" />,
+      bgColor: "rgba(255, 152, 0, 0.1)",
+    },
+    {
+      id: "score",
+      title: "Ср. балл",
+      value: avgScore,
+      icon: <Chart size={20} color="#E91E63" />,
+      bgColor: "rgba(233, 30, 99, 0.1)",
+    },
+  ];
+
+  const renderFilters = () => (
+    <FormControl size="small" sx={{ minWidth: 200 }}>
+      <Select
+        value={groupFilter}
+        onChange={(e) => setGroupFilter(e.target.value)}
+      >
+        {groups.map((group) => (
+          <MenuItem key={group} value={group}>
+            {group}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
@@ -239,130 +282,15 @@ export const MentorStudentsPage: React.FC = () => {
         </Box>
       </Stack>
 
-      {/* Stats */}
-      <Grid container spacing={2} mb={3}>
-        <Grid size={{ xs: 6, md: 3 }}>
-          <Paper sx={{ p: 2, borderRadius: 2 }}>
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(18, 100, 235, 0.1)" }}>
-                <Profile2User size={20} color="#1264EB" />
-              </Box>
-              <Box>
-                <Typography variant="h5" fontWeight={700}>
-                  {totalStudents}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Всего студентов
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 6, md: 3 }}>
-          <Paper sx={{ p: 2, borderRadius: 2 }}>
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(76, 175, 80, 0.1)" }}>
-                <TickCircle size={20} color="#4CAF50" />
-              </Box>
-              <Box>
-                <Typography variant="h5" fontWeight={700}>
-                  {activeStudents}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Активных
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 6, md: 3 }}>
-          <Paper sx={{ p: 2, borderRadius: 2 }}>
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(255, 152, 0, 0.1)" }}>
-                <Calendar size={20} color="#FF9800" />
-              </Box>
-              <Box>
-                <Typography variant="h5" fontWeight={700}>
-                  {avgAttendance}%
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Ср. посещаемость
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 6, md: 3 }}>
-          <Paper sx={{ p: 2, borderRadius: 2 }}>
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(233, 30, 99, 0.1)" }}>
-                <Chart size={20} color="#E91E63" />
-              </Box>
-              <Box>
-                <Typography variant="h5" fontWeight={700}>
-                  {avgScore}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Ср. балл
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      {/* Filters */}
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        mb={2}
-        bgcolor="white"
-        borderRadius={3}
-        p={2}
-      >
-        <TextField
-          placeholder="Поиск студента..."
-          size="small"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 280 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchNormal1 size={20} color="#9E9E9E" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <Select
-            value={groupFilter}
-            onChange={(e) => setGroupFilter(e.target.value)}
-          >
-            {groups.map((group) => (
-              <MenuItem key={group} value={group}>
-                {group}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
-
-      {/* Table */}
-      <DataGrid
+      <DataTable
         rows={filteredStudents}
         columns={columns}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
-        disableRowSelectionOnClick
+        stats={stats}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Поиск студента..."
+        addButtonEnabled={false}
+        renderFilters={renderFilters}
       />
 
       {/* Student Details Dialog */}

@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState, useMemo } from "react";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, StatItem } from "@/shared/ui";
 import {
   Box,
   Stack,
-  TextField,
-  InputAdornment,
   Typography,
   Chip,
   Button,
@@ -17,11 +16,9 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Grid2 as Grid,
+  TextField,
 } from "@mui/material";
 import {
-  SearchNormal1,
-  Add,
   Call,
   Sms,
   Eye,
@@ -67,6 +64,7 @@ export const ReceptionistStudentsPage: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
+  // Filtrlangan talabalar
   const filteredStudents = useMemo(() => {
     let result = students;
 
@@ -87,6 +85,36 @@ export const ReceptionistStudentsPage: React.FC = () => {
     return result;
   }, [searchQuery, statusFilter]);
 
+  // Statistika
+  const activeCount = students.filter((s) => s.status === "active").length;
+  const trialCount = students.filter((s) => s.status === "trial").length;
+  const inquiryCount = students.filter((s) => s.status === "inquiry").length;
+
+  const stats: StatItem[] = [
+    {
+      id: "active",
+      title: "Активных",
+      value: activeCount,
+      icon: <TickCircle size={20} color="#4CAF50" />,
+      bgColor: "rgba(76, 175, 80, 0.1)",
+    },
+    {
+      id: "trial",
+      title: "На пробном",
+      value: trialCount,
+      icon: <Profile2User size={20} color="#1264EB" />,
+      bgColor: "rgba(18, 100, 235, 0.1)",
+    },
+    {
+      id: "inquiry",
+      title: "Заявок",
+      value: inquiryCount,
+      icon: <Sms size={20} color="#FF9800" />,
+      bgColor: "rgba(255, 152, 0, 0.1)",
+    },
+  ];
+
+  // Jadval ustunlari
   const columns: GridColDef<Student>[] = [
     {
       field: "name",
@@ -94,15 +122,37 @@ export const ReceptionistStudentsPage: React.FC = () => {
       flex: 1,
       minWidth: 200,
       renderCell: ({ row }) => (
-        <Stack direction="row" alignItems="center" spacing={1.5}>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: "#1264EB" }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1.5}
+          sx={{ width: "100%", minWidth: 0 }}
+        >
+          <Avatar sx={{ width: 32, height: 32, bgcolor: "#1264EB", flexShrink: 0 }}>
             {row.name.charAt(0)}
           </Avatar>
-          <Box>
-            <Typography variant="body2" fontWeight={500}>
+          <Box sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <Typography
+              variant="body2"
+              fontWeight={500}
+              sx={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {row.name}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                display: "block",
+              }}
+            >
               {row.email}
             </Typography>
           </Box>
@@ -142,10 +192,10 @@ export const ReceptionistStudentsPage: React.FC = () => {
             value === "active"
               ? "success"
               : value === "trial"
-              ? "info"
-              : value === "frozen"
-              ? "warning"
-              : "default"
+                ? "info"
+                : value === "frozen"
+                  ? "warning"
+                  : "default"
           }
         />
       ),
@@ -177,135 +227,37 @@ export const ReceptionistStudentsPage: React.FC = () => {
     },
   ];
 
-  // Stats
-  const activeCount = students.filter((s) => s.status === "active").length;
-  const trialCount = students.filter((s) => s.status === "trial").length;
-  const inquiryCount = students.filter((s) => s.status === "inquiry").length;
-
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Студенты
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Управление записями студентов
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} />}
-          onClick={() => setAddDialogOpen(true)}
-        >
-          Новая запись
-        </Button>
-      </Stack>
-
-      {/* Stats */}
-      <Grid container spacing={2} mb={3}>
-        <Grid size={{ xs: 4 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1.5}
-            sx={{ p: 2, bgcolor: "white", borderRadius: 2 }}
-          >
-            <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(76, 175, 80, 0.1)" }}>
-              <TickCircle size={20} color="#4CAF50" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {activeCount}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Активных
-              </Typography>
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid size={{ xs: 4 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1.5}
-            sx={{ p: 2, bgcolor: "white", borderRadius: 2 }}
-          >
-            <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(18, 100, 235, 0.1)" }}>
-              <Profile2User size={20} color="#1264EB" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {trialCount}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                На пробном
-              </Typography>
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid size={{ xs: 4 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1.5}
-            sx={{ p: 2, bgcolor: "white", borderRadius: 2 }}
-          >
-            <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(255, 152, 0, 0.1)" }}>
-              <Sms size={20} color="#FF9800" />
-            </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>
-                {inquiryCount}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Заявок
-              </Typography>
-            </Box>
-          </Stack>
-        </Grid>
-      </Grid>
-
-      {/* Filters */}
-      <Stack direction="row" spacing={2} alignItems="center" mb={2} bgcolor="white" borderRadius={3} p={2}>
-        <TextField
-          placeholder="Поиск по имени, телефону, email..."
-          size="small"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 300 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchNormal1 size={20} color="#9E9E9E" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <MenuItem value="Все">Все статусы</MenuItem>
-            {statusOptions.filter((s) => s !== "Все").map((status) => (
-              <MenuItem key={status} value={status}>
-                {statusLabels[status]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
-
-      {/* Table */}
-      <DataGrid
+      {/* DataTable - universal komponent */}
+      <DataTable
         rows={filteredStudents}
         columns={columns}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10, page: 0 } },
-        }}
-        disableRowSelectionOnClick
+        // Statistika
+        stats={stats}
+        statsColumns={{ xs: 6, md: 4 }}
+        // Qidiruv
+        searchEnabled
+        searchValue={searchQuery}
+        searchPlaceholder="Поиск по имени, телефону, email..."
+        onSearchChange={setSearchQuery}
+        // Qo'shish tugmasi
+        addButtonEnabled
+        addButtonText="Новая запись"
+        onAddClick={() => setAddDialogOpen(true)}
+        // Custom filterlar
+        renderFilters={() => (
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <MenuItem value="Все">Все статусы</MenuItem>
+              {statusOptions.filter((s) => s !== "Все").map((status) => (
+                <MenuItem key={status} value={status}>
+                  {statusLabels[status]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       />
 
       {/* Student Details Dialog */}
@@ -329,8 +281,8 @@ export const ReceptionistStudentsPage: React.FC = () => {
                         selectedStudent.status === "active"
                           ? "success"
                           : selectedStudent.status === "trial"
-                          ? "info"
-                          : "default"
+                            ? "info"
+                            : "default"
                       }
                     />
                   </Box>
@@ -406,7 +358,9 @@ export const ReceptionistStudentsPage: React.FC = () => {
             <TextField label="Телефон" size="small" fullWidth />
             <TextField label="Email" size="small" fullWidth />
             <FormControl fullWidth size="small">
-              <Typography variant="body2" mb={0.5}>Интересующий курс</Typography>
+              <Typography variant="body2" mb={0.5}>
+                Интересующий курс
+              </Typography>
               <Select defaultValue="">
                 <MenuItem value="english">English</MenuItem>
                 <MenuItem value="korean">Korean</MenuItem>

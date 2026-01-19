@@ -1,18 +1,15 @@
 import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable } from "@/shared/ui";
 import {
-  Box,
   IconButton,
   Stack,
-  TextField,
-  InputAdornment,
-  Button,
   FormControl,
   Select,
   MenuItem,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Edit2, Trash, SearchNormal1, Add } from "iconsax-react";
+import { Edit2, Trash } from "iconsax-react";
 import type { Region } from "../types/regions.types";
 
 interface RegionsTableProps {
@@ -122,76 +119,32 @@ export const RegionsTable: React.FC<RegionsTableProps> = ({
     [filteredRegions, regions, onEdit, onDelete, theme]
   );
 
-  return (
-    <Box
-      sx={{
-        borderRadius: 3,
-        mb: 3,
-      }}
-    >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-        bgcolor="white"
-        borderRadius={3}
-        p={2}
+  const renderFilters = () => (
+    <FormControl size="small" sx={{ minWidth: 150 }}>
+      <Select
+        value={typeFilter}
+        onChange={(e) =>
+          setTypeFilter(e.target.value as "all" | "region" | "district")
+        }
       >
-        <Stack direction="row" spacing={2} alignItems="center">
-          <TextField
-            placeholder="Поиск..."
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 250 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchNormal1 size={20} color="#9E9E9E" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
+        <MenuItem value="all">Все</MenuItem>
+        <MenuItem value="region">Регионы</MenuItem>
+        <MenuItem value="district">Районы</MenuItem>
+      </Select>
+    </FormControl>
+  );
 
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <Select
-              value={typeFilter}
-              onChange={(e) =>
-                setTypeFilter(e.target.value as "all" | "region" | "district")
-              }
-            >
-              <MenuItem value="all">Все</MenuItem>
-              <MenuItem value="region">Регионы</MenuItem>
-              <MenuItem value="district">Районы</MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
-
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} color="#FFFFFF" />}
-          onClick={onAdd}
-        >
-          Добавить
-        </Button>
-      </Stack>
-
-      <DataGrid
-        rows={filteredRegions}
-        columns={columns}
-        loading={isLoading}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
-        disableRowSelectionOnClick
-        sx={{ mt: 3 }}
-      />
-    </Box>
+  return (
+    <DataTable
+      rows={filteredRegions}
+      columns={columns}
+      loading={isLoading}
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      searchPlaceholder="Поиск..."
+      addButtonText="Добавить"
+      onAddClick={onAdd}
+      renderFilters={renderFilters}
+    />
   );
 };

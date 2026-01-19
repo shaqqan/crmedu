@@ -1,13 +1,11 @@
-import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState, useMemo } from "react";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, StatItem } from "@/shared/ui";
 import {
   Box,
   Stack,
-  TextField,
-  InputAdornment,
   Typography,
   Chip,
-  Button,
   FormControl,
   Select,
   MenuItem,
@@ -17,10 +15,10 @@ import {
   DialogActions,
   IconButton,
   InputLabel,
+  TextField,
+  Button,
 } from "@mui/material";
 import {
-  SearchNormal1,
-  Add,
   Edit2,
   Trash,
   Eye,
@@ -28,9 +26,11 @@ import {
   Building,
   People,
   Monitor,
-  Wifi,
   VideoPlay,
   Microphone2,
+  TickCircle,
+  CloseSquare,
+  Wifi,
 } from "iconsax-react";
 
 interface Classroom {
@@ -297,134 +297,71 @@ export const ClassroomsPage: React.FC = () => {
   ];
 
   // Stats
-  const availableCount = classrooms.filter(
-    (c) => c.status === "available"
-  ).length;
-  const occupiedCount = classrooms.filter(
-    (c) => c.status === "occupied"
-  ).length;
+  const availableCount = classrooms.filter((c) => c.status === "available").length;
+  const occupiedCount = classrooms.filter((c) => c.status === "occupied").length;
   const totalCapacity = classrooms.reduce((sum, c) => sum + c.capacity, 0);
+
+  const stats: StatItem[] = [
+    {
+      id: "available",
+      title: "Свободных",
+      value: availableCount,
+      icon: <TickCircle size={20} color="#4CAF50" />,
+      bgColor: "rgba(76, 175, 80, 0.1)",
+    },
+    {
+      id: "occupied",
+      title: "Занятых",
+      value: occupiedCount,
+      icon: <CloseSquare size={20} color="#F44336" />,
+      bgColor: "rgba(244, 67, 54, 0.1)",
+    },
+    {
+      id: "capacity",
+      title: "Общая вместимость",
+      value: totalCapacity,
+      icon: <People size={20} color="#1264EB" />,
+      bgColor: "rgba(18, 100, 235, 0.1)",
+    },
+  ];
 
   return (
     <Box>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Аудитории
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Управление учебными аудиториями
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} />}
-          onClick={() => setAddDialogOpen(true)}
-        >
-          Добавить аудиторию
-        </Button>
-      </Stack>
-
-      {/* Stats */}
-      <Stack direction="row" spacing={2} mb={3}>
-        <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, minWidth: 140 }}>
-          <Typography variant="h4" fontWeight={700} color="success.main">
-            {availableCount}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Свободных
-          </Typography>
-        </Box>
-        <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, minWidth: 140 }}>
-          <Typography variant="h4" fontWeight={700} color="error.main">
-            {occupiedCount}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Занятых
-          </Typography>
-        </Box>
-        <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, minWidth: 140 }}>
-          <Typography variant="h4" fontWeight={700} color="primary">
-            {totalCapacity}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Общая вместимость
-          </Typography>
-        </Box>
-      </Stack>
-
-      {/* Filters */}
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        mb={2}
-        bgcolor="white"
-        borderRadius={3}
-        p={2}
-      >
-        <TextField
-          placeholder="Поиск по названию..."
-          size="small"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 250 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchNormal1 size={20} color="#9E9E9E" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
-        <FormControl size="small" sx={{ minWidth: 180 }}>
-          <Select
-            value={branchFilter}
-            onChange={(e) => setBranchFilter(e.target.value)}
-          >
-            {branches.map((branch) => (
-              <MenuItem key={branch} value={branch}>
-                {branch === "Все" ? "Все филиалы" : branch}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <MenuItem value="Все">Все статусы</MenuItem>
-            {statuses
-              .filter((s) => s !== "Все")
-              .map((status) => (
-                <MenuItem key={status} value={status}>
-                  {statusLabels[status]}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-      </Stack>
-
-      {/* Table */}
-      <DataGrid
+      <DataTable
         rows={filteredClassrooms}
         columns={columns}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10, page: 0 } },
-        }}
-        disableRowSelectionOnClick
-        sx={{ bgcolor: "white", borderRadius: 3 }}
+        stats={stats}
+        statsColumns={{ xs: 6, md: 4 }}
+        searchEnabled
+        searchValue={searchQuery}
+        searchPlaceholder="Поиск по названию..."
+        onSearchChange={setSearchQuery}
+        addButtonEnabled
+        addButtonText="Добавить аудиторию"
+        onAddClick={() => setAddDialogOpen(true)}
+        renderFilters={() => (
+          <>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
+                {branches.map((branch) => (
+                  <MenuItem key={branch} value={branch}>
+                    {branch === "Все" ? "Все филиалы" : branch}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                <MenuItem value="Все">Все статусы</MenuItem>
+                {statuses.filter((s) => s !== "Все").map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {statusLabels[status]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </>
+        )}
       />
 
       {/* Classroom Details Dialog */}

@@ -1,16 +1,13 @@
 import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable } from "@/shared/ui";
 import {
-  Box,
   IconButton,
   Stack,
-  TextField,
-  InputAdornment,
-  Button,
   Chip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Edit2, Trash, SearchNormal1, Add } from "iconsax-react";
+import { Edit2, Trash } from "iconsax-react";
 import type { Holiday } from "../types/holidays.types";
 
 interface HolidaysTableProps {
@@ -115,67 +112,15 @@ export const HolidaysTable: React.FC<HolidaysTableProps> = ({
   );
 
   return (
-    <Box
-      sx={{
-        bgcolor: "white",
-        borderRadius: 3,
-        border: "1px solid #E0E0E0",
-        p: 2,
-      }}
-    >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <TextField
-          placeholder="Поиск..."
-          size="small"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 250 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchNormal1 size={20} color="#9E9E9E" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} color="#FFFFFF" />}
-          onClick={onAdd}
-        >
-          Добавить
-        </Button>
-      </Stack>
-
-      <DataGrid
-        rows={filteredHolidays}
-        columns={columns}
-        loading={isLoading}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
-        disableRowSelectionOnClick
-        sx={{
-          border: "none",
-          "& .MuiDataGrid-columnHeaders": {
-            bgcolor: "#F1F3F5",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "1px solid #F0F0F0",
-          },
-        }}
-      />
-    </Box>
+    <DataTable
+      rows={filteredHolidays}
+      columns={columns}
+      loading={isLoading}
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      searchPlaceholder="Поиск..."
+      addButtonText="Добавить"
+      onAddClick={onAdd}
+    />
   );
 };

@@ -96,7 +96,12 @@ export type Permission =
   | "finance.salary-settings.edit"
   // Reports
   | "reports.financial.view"
-  | "reports.educational.view";
+  | "reports.educational.view"
+  // Leads
+  | "leads.view"
+  | "leads.create"
+  | "leads.edit"
+  | "leads.delete";
 
 // Role permissions mapping
 export const rolePermissions: Record<Role, Permission[]> = {
@@ -295,6 +300,11 @@ export const rolePermissions: Record<Role, Permission[]> = {
     "groups.view",
     "schedule.view",
     "news.view",
+    // Leads management
+    "leads.view",
+    "leads.create",
+    "leads.edit",
+    "leads.delete",
   ],
 };
 

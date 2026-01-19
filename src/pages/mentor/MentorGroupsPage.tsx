@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
@@ -9,25 +9,14 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import IconButton from "@mui/material/IconButton";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
 import {
   Category,
   Calendar,
   Clock,
   Profile2User,
-  CloseCircle,
   Eye,
-  TickCircle,
 } from "iconsax-react";
+import { useNavigate } from "react-router";
 
 interface GroupStudent {
   id: string;
@@ -140,8 +129,7 @@ const myGroups: MentorGroup[] = [
 ];
 
 export const MentorGroupsPage: React.FC = () => {
-  const [selectedGroup, setSelectedGroup] = useState<MentorGroup | null>(null);
-  const [detailTab, setDetailTab] = useState(0);
+  const navigate = useNavigate();
 
   return (
     <Box>
@@ -192,7 +180,7 @@ export const MentorGroupsPage: React.FC = () => {
                 <Button
                   size="small"
                   startIcon={<Eye size={16} />}
-                  onClick={() => setSelectedGroup(group)}
+                  onClick={() => navigate(`/mentor/groups/${group.id}`)}
                 >
                   Подробнее
                 </Button>
@@ -258,162 +246,6 @@ export const MentorGroupsPage: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-
-      {/* Group Details Dialog */}
-      <Dialog
-        open={!!selectedGroup}
-        onClose={() => setSelectedGroup(null)}
-        maxWidth="md"
-        fullWidth
-      >
-        {selectedGroup && (
-          <>
-            <DialogTitle>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 2,
-                      bgcolor: `${selectedGroup.color}20`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Category size={20} color={selectedGroup.color} />
-                  </Box>
-                  <Box>
-                    <Typography variant="h6" fontWeight={600}>
-                      {selectedGroup.course} {selectedGroup.level} - {selectedGroup.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {selectedGroup.schedule} • Ауд. {selectedGroup.room}
-                    </Typography>
-                  </Box>
-                </Stack>
-                <IconButton onClick={() => setSelectedGroup(null)}>
-                  <CloseCircle size={24} />
-                </IconButton>
-              </Stack>
-            </DialogTitle>
-            <DialogContent>
-              <Tabs
-                value={detailTab}
-                onChange={(_, v) => setDetailTab(v)}
-                sx={{ mb: 2, borderBottom: 1, borderColor: "divider" }}
-              >
-                <Tab label="Студенты" />
-                <Tab label="Статистика" />
-              </Tabs>
-
-              {detailTab === 0 && (
-                <List>
-                  {selectedGroup.students.map((student) => (
-                    <ListItem
-                      key={student.id}
-                      sx={{
-                        bgcolor: "#F9FAFB",
-                        borderRadius: 2,
-                        mb: 1,
-                      }}
-                    >
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: selectedGroup.color }}>
-                          {student.name.charAt(0)}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={student.name}
-                        secondary={
-                          <Stack direction="row" spacing={2}>
-                            <Typography variant="caption">
-                              Посещаемость: {student.attendance}%
-                            </Typography>
-                            <Typography variant="caption">
-                              Средний балл: {student.avgScore}
-                            </Typography>
-                          </Stack>
-                        }
-                      />
-                      <Chip
-                        size="small"
-                        label={
-                          student.status === "active"
-                            ? "Активен"
-                            : student.status === "frozen"
-                            ? "Заморожен"
-                            : "Завершил"
-                        }
-                        color={
-                          student.status === "active"
-                            ? "success"
-                            : student.status === "frozen"
-                            ? "warning"
-                            : "default"
-                        }
-                        icon={
-                          student.status === "active" ? (
-                            <TickCircle size={14} />
-                          ) : (
-                            <CloseCircle size={14} />
-                          )
-                        }
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-
-              {detailTab === 1 && (
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 6, md: 3 }}>
-                    <Paper sx={{ p: 2, textAlign: "center", bgcolor: "#F9FAFB" }}>
-                      <Typography variant="h4" fontWeight={700} color="primary">
-                        {selectedGroup.studentsCount}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Студентов
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid size={{ xs: 6, md: 3 }}>
-                    <Paper sx={{ p: 2, textAlign: "center", bgcolor: "#F9FAFB" }}>
-                      <Typography variant="h4" fontWeight={700} color="success.main">
-                        {selectedGroup.lessonsCompleted}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Проведено занятий
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid size={{ xs: 6, md: 3 }}>
-                    <Paper sx={{ p: 2, textAlign: "center", bgcolor: "#F9FAFB" }}>
-                      <Typography variant="h4" fontWeight={700} color="warning.main">
-                        {selectedGroup.totalLessons - selectedGroup.lessonsCompleted}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Осталось занятий
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid size={{ xs: 6, md: 3 }}>
-                    <Paper sx={{ p: 2, textAlign: "center", bgcolor: "#F9FAFB" }}>
-                      <Typography variant="h4" fontWeight={700} color="info.main">
-                        {selectedGroup.progress}%
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Прогресс
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              )}
-            </DialogContent>
-          </>
-        )}
-      </Dialog>
     </Box>
   );
 };

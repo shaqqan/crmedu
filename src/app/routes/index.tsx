@@ -32,11 +32,20 @@ import {
   // Mentor pages
   MentorDashboardPage,
   MentorGroupsPage,
+  MentorGroupDetailPage,
   MentorStudentsPage,
   MentorSchedulePage,
+  MentorAttendancePage,
+  MentorAttendanceHistoryPage,
+  MentorGradingPage,
+  MentorSalaryPage,
+  MentorSalaryHistoryPage,
+  MentorSalaryInfoPage,
+  MentorProfilePage,
   // Receptionist pages
   ReceptionistDashboardPage,
   ReceptionistStudentsPage,
+  LeadsPage,
 } from "@/pages";
 
 export const AppRoutes: React.FC = () => {
@@ -192,6 +201,14 @@ export const AppRoutes: React.FC = () => {
             }
           />
           <Route
+            path="groups/:groupId"
+            element={
+              <ProtectedRoute permission="groups.view">
+                <MentorGroupDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="students"
             element={
               <ProtectedRoute permission="students.view">
@@ -207,6 +224,62 @@ export const AppRoutes: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="attendance"
+            element={
+              <ProtectedRoute permission="schedule.view">
+                <MentorAttendancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="grading"
+            element={
+              <ProtectedRoute permission="schedule.view">
+                <MentorGradingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="attendance-history"
+            element={
+              <ProtectedRoute permission="schedule.view">
+                <MentorAttendanceHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="salary"
+            element={
+              <ProtectedRoute permission="dashboard.view">
+                <MentorSalaryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="salary-history"
+            element={
+              <ProtectedRoute permission="dashboard.view">
+                <MentorSalaryHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="salary-info"
+            element={
+              <ProtectedRoute permission="dashboard.view">
+                <MentorSalaryInfoPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute permission="dashboard.view">
+                <MentorProfilePage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* ==================== RECEPTIONIST ROUTES ==================== */}
@@ -216,6 +289,14 @@ export const AppRoutes: React.FC = () => {
             element={
               <ProtectedRoute permission="dashboard.view">
                 <ReceptionistDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="leads"
+            element={
+              <ProtectedRoute permission="leads.view">
+                <LeadsPage />
               </ProtectedRoute>
             }
           />

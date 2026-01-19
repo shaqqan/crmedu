@@ -11,6 +11,9 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Collapse from "@mui/material/Collapse";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Popover from "@mui/material/Popover";
 import {
   Building,
   People,
@@ -33,6 +36,9 @@ import {
   Shield,
   MoneySend,
   MoneyRecive,
+  UserTag,
+  ArrowLeft2,
+  ArrowRight2,
 } from "iconsax-react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuthStore } from "@/shared/store";
@@ -40,6 +46,7 @@ import type { Permission, Role } from "@/shared/config/rbac";
 import { roleNames } from "@/shared/config/rbac";
 
 const DRAWER_WIDTH = 310;
+const COLLAPSED_WIDTH = 88;
 
 interface MenuItem {
   text: string;
@@ -96,13 +103,18 @@ const mentorMenuItems: MenuItem[] = [
   { text: "Мои группы", icon: <Category size={22} color="currentColor" />, path: "/mentor/groups", permission: "groups.view" },
   { text: "Мои студенты", icon: <Profile2User size={22} color="currentColor" />, path: "/mentor/students", permission: "students.view" },
   { text: "Мое расписание", icon: <Calendar size={22} color="currentColor" />, path: "/mentor/schedule", permission: "schedule.view" },
-  { text: "Курсы", icon: <Book1 size={22} color="currentColor" />, path: "/courses", permission: "courses.view" },
-  { text: "Библиотека", icon: <Book1 size={22} color="currentColor" />, path: "/library", permission: "library.view" },
+  { text: "Davomat tarixi", icon: <CalendarTick size={22} color="currentColor" />, path: "/mentor/attendance-history", permission: "schedule.view" },
+  { text: "Зарплата", icon: <DollarCircle size={22} color="currentColor" />, children: [
+    { text: "Мониторинг", icon: <Chart size={22} color="currentColor" />, path: "/mentor/salary", permission: "dashboard.view" },
+    { text: "История зарплаты", icon: <MoneyRecive size={22} color="currentColor" />, path: "/mentor/salary-history", permission: "dashboard.view" },
+    { text: "Зарплата", icon: <Wallet size={22} color="currentColor" />, path: "/mentor/salary-info", permission: "dashboard.view" },
+  ]},
 ];
 
 // Receptionist Menu - Front desk operations
 const receptionistMenuItems: MenuItem[] = [
   { text: "Дашборд", icon: <Category size={22} color="currentColor" />, path: "/receptionist/dashboard", permission: "dashboard.view" },
+  { text: "Лиды", icon: <UserTag size={22} color="currentColor" />, path: "/receptionist/leads", permission: "leads.view" },
   { text: "Студенты", icon: <Profile2User size={22} color="currentColor" />, path: "/receptionist/students", permission: "students.view" },
   { text: "Расписание", icon: <Calendar size={22} color="currentColor" />, path: "/schedule", permission: "schedule.view" },
   { text: "Группы", icon: <Category size={22} color="currentColor" />, path: "/groups", permission: "groups.view" },
@@ -131,17 +143,39 @@ interface SidebarProps {
   open: boolean;
   onClose: () => void;
   variant?: "permanent" | "temporary";
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   open,
   onClose,
   variant = "permanent",
+  collapsed = false,
+  onCollapsedChange,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(null);
+  const [popoverItem, setPopoverItem] = useState<MenuItem | null>(null);
   const { can, user } = useAuthStore();
+
+  const currentWidth = collapsed ? COLLAPSED_WIDTH : DRAWER_WIDTH;
+
+  const handleToggleCollapse = () => {
+    onCollapsedChange?.(!collapsed);
+  };
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>, item: MenuItem) => {
+    setPopoverAnchor(event.currentTarget);
+    setPopoverItem(item);
+  };
+
+  const handlePopoverClose = () => {
+    setPopoverAnchor(null);
+    setPopoverItem(null);
+  };
 
   // Get menu items based on user role
   const userRole = user?.role || "admin";
@@ -183,61 +217,89 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const listItemButtonStyles = {
     borderRadius: "8px",
     "&.Mui-selected": {
-      bgcolor: "#1264EB",
+      bgcolor: "primary.main",
       color: "#FFFFFF",
-      "&:hover": { bgcolor: "#1264EB" },
+      "&:hover": { bgcolor: "primary.main" },
       "& .MuiListItemIcon-root": { color: "#FFFFFF" },
     },
   };
 
   const drawerContent = (
-    <Box sx={{ pl: 2, pr: 2 }}>
-      <Toolbar sx={{ height: 65, minHeight: "65px !important", px: 3 }}>
-        <Typography variant="h5" fontWeight={700} color="primary" p={0} m={0}>
-          EduCRM
-        </Typography>
-        {user && (
-          <Chip
-            label={roleNames[userRole]}
-            size="small"
-            sx={{
-              ml: 1,
-              bgcolor: roleBadgeColors[userRole],
-              color: "white",
-              fontSize: 10,
-              height: 20,
-            }}
-          />
+    <Box sx={{ pl: collapsed ? 1 : 2, pr: collapsed ? 1 : 2, height: "100%", display: "flex", flexDirection: "column" }}>
+      <Toolbar sx={{ height: 65, minHeight: "65px !important", px: collapsed ? 1 : 3, justifyContent: collapsed ? "center" : "flex-start" }}>
+        {collapsed ? (
+          <Typography variant="h5" fontWeight={700} color="primary" p={0} m={0}>
+            F
+          </Typography>
+        ) : (
+          <>
+            <Typography variant="h5" fontWeight={700} color="primary" p={0} m={0}>
+              FuckCRM
+            </Typography>
+            {user && (
+              <Chip
+                label={roleNames[userRole]}
+                size="small"
+                sx={{
+                  ml: 1,
+                  bgcolor: roleBadgeColors[userRole],
+                  color: "white",
+                  fontSize: 10,
+                  height: 20,
+                }}
+              />
+            )}
+          </>
         )}
       </Toolbar>
       <Divider sx={{ borderColor: "divider" }} variant="middle" />
-      <List sx={{ mt: 2 }}>
+      <List sx={{
+        mt: 2,
+        flex: 1,
+        overflowY: "auto",
+        overflowX: "hidden",
+        "&::-webkit-scrollbar": { display: "none" },
+        msOverflowStyle: "none",
+        scrollbarWidth: "none",
+      }}>
         {filteredMenuItems.map((item) => (
           <React.Fragment key={item.text}>
             <ListItem disablePadding>
-              <ListItemButton
-                selected={item.path ? location.pathname === item.path : false}
-                onClick={() => {
-                  if (item.children) {
-                    handleToggleMenu(item.text);
-                  } else if (item.path) {
-                    navigate(item.path);
-                    if (variant === "temporary") onClose();
-                  }
-                }}
-                sx={listItemButtonStyles}
-              >
-                <ListItemIcon sx={{ minWidth: 36 }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-                {item.children &&
-                  (isMenuOpen(item.text) ? (
-                    <ArrowUp2 size={18} color="currentColor" />
-                  ) : (
-                    <ArrowDown2 size={18} color="currentColor" />
-                  ))}
-              </ListItemButton>
+              <Tooltip title={collapsed && !item.children ? item.text : ""} placement="right" arrow>
+                <ListItemButton
+                  selected={item.path ? location.pathname === item.path : false}
+                  onClick={(e) => {
+                    if (item.children) {
+                      if (collapsed) {
+                        handlePopoverOpen(e, item);
+                      } else {
+                        handleToggleMenu(item.text);
+                      }
+                    } else if (item.path) {
+                      navigate(item.path);
+                      if (variant === "temporary") onClose();
+                    }
+                  }}
+                  sx={{
+                    ...listItemButtonStyles,
+                    justifyContent: collapsed ? "center" : "flex-start",
+                    px: collapsed ? 1 : 2,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: collapsed ? 0 : 36, justifyContent: "center" }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  {!collapsed && <ListItemText primary={item.text} />}
+                  {!collapsed && item.children &&
+                    (isMenuOpen(item.text) ? (
+                      <ArrowUp2 size={18} color="currentColor" />
+                    ) : (
+                      <ArrowDown2 size={18} color="currentColor" />
+                    ))}
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
-            {item.children && (
+            {!collapsed && item.children && (
               <Collapse in={isMenuOpen(item.text)} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {item.children.map((child) => (
@@ -263,6 +325,88 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </React.Fragment>
         ))}
       </List>
+
+      {/* Popover for collapsed menu with children */}
+      <Popover
+        open={Boolean(popoverAnchor)}
+        anchorEl={popoverAnchor}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "left",
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              ml: 1,
+              borderRadius: 2,
+              boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+              minWidth: 200,
+            },
+          },
+        }}
+      >
+        {popoverItem && (
+          <Box sx={{ py: 1 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{ px: 2, py: 1, color: "text.secondary", fontWeight: 600 }}
+            >
+              {popoverItem.text}
+            </Typography>
+            <Divider sx={{ mb: 1 }} />
+            <List disablePadding>
+              {popoverItem.children?.map((child) => (
+                <ListItem key={child.text} disablePadding>
+                  <ListItemButton
+                    selected={location.pathname === child.path}
+                    onClick={() => {
+                      if (child.path) {
+                        navigate(child.path);
+                        handlePopoverClose();
+                      }
+                    }}
+                    sx={{
+                      ...listItemButtonStyles,
+                      mx: 1,
+                      mb: 0.5,
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 36 }}>{child.icon}</ListItemIcon>
+                    <ListItemText primary={child.text} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
+      </Popover>
+      {/* Collapse toggle button */}
+      {variant === "permanent" && (
+        <Box sx={{ p: 1, borderTop: "1px solid", borderColor: "divider" }}>
+          <Tooltip title={collapsed ? "Kengaytirish" : "Yig'ish"} placement="right" arrow>
+            <IconButton
+              onClick={handleToggleCollapse}
+              sx={{
+                width: "100%",
+                borderRadius: 2,
+                bgcolor: "#F9FAFB",
+                "&:hover": { bgcolor: "#F3F4F6" },
+              }}
+            >
+              {collapsed ? (
+                <ArrowRight2 size={20} color="#6B7280" />
+              ) : (
+                <ArrowLeft2 size={20} color="#6B7280" />
+              )}
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
     </Box>
   );
 
@@ -294,14 +438,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       variant="permanent"
       sx={{
         display: { xs: "none", md: "block" },
-        width: DRAWER_WIDTH,
+        width: currentWidth,
         flexShrink: 0,
+        transition: "width 0.3s ease",
         "& .MuiDrawer-paper": {
-          width: DRAWER_WIDTH,
+          width: currentWidth,
           boxSizing: "border-box",
           bgcolor: "#FFFFFF",
           borderRight: "1px solid",
           borderColor: "divider",
+          transition: "width 0.3s ease",
+          overflowX: "hidden",
         },
       }}
       open
@@ -312,3 +459,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export const SIDEBAR_WIDTH = DRAWER_WIDTH;
+export const SIDEBAR_COLLAPSED_WIDTH = COLLAPSED_WIDTH;

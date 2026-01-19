@@ -1,14 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, StatItem } from "@/shared/ui";
 import {
   Box,
   Stack,
   TextField,
-  InputAdornment,
   Typography,
   Chip,
-  Button,
-  Paper,
   FormControl,
   Select,
   MenuItem,
@@ -17,19 +15,15 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Grid2 as Grid,
+  Button,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import {
-  SearchNormal1,
-  Add,
   MoneySend,
   CloseCircle,
   Wallet,
-  Building,
-  Calendar,
 } from "iconsax-react";
 
 interface Expense {
@@ -152,6 +146,43 @@ export const FinancierExpensesPage: React.FC = () => {
   const totalExpenses = expenses.filter((e) => e.status === "approved").reduce((acc, e) => acc + e.amount, 0);
   const pendingExpenses = expenses.filter((e) => e.status === "pending").reduce((acc, e) => acc + e.amount, 0);
 
+  const stats: StatItem[] = [
+    {
+      id: "total",
+      title: "Всего расходов",
+      value: `$${totalExpenses.toLocaleString()}`,
+      icon: <MoneySend size={20} color="#F44336" />,
+      bgColor: "rgba(244, 67, 54, 0.1)",
+    },
+    {
+      id: "pending",
+      title: "Ожидает одобрения",
+      value: `$${pendingExpenses.toLocaleString()}`,
+      icon: <Wallet size={20} color="#FF9800" />,
+      bgColor: "rgba(255, 152, 0, 0.1)",
+    },
+  ];
+
+  const renderFilters = () => (
+    <>
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+          {categories.map((cat) => (
+            <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
+          {branches.map((branch) => (
+            <MenuItem key={branch} value={branch}>{branch}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </>
+  );
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
@@ -164,99 +195,21 @@ export const FinancierExpensesPage: React.FC = () => {
               Управление расходами учебного центра
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<Add size={20} />}
-            onClick={() => setAddDialogOpen(true)}
-          >
-            Добавить расход
-          </Button>
         </Stack>
 
-        {/* Stats */}
-        <Grid container spacing={2} mb={3}>
-          <Grid size={{ xs: 6, md: 3 }}>
-            <Paper sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" alignItems="center" spacing={1.5}>
-                <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(244, 67, 54, 0.1)" }}>
-                  <MoneySend size={20} color="#F44336" />
-                </Box>
-                <Box>
-                  <Typography variant="h5" fontWeight={700} color="error.main">
-                    ${totalExpenses.toLocaleString()}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Всего расходов
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 6, md: 3 }}>
-            <Paper sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" alignItems="center" spacing={1.5}>
-                <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(255, 152, 0, 0.1)" }}>
-                  <Wallet size={20} color="#FF9800" />
-                </Box>
-                <Box>
-                  <Typography variant="h5" fontWeight={700} color="warning.main">
-                    ${pendingExpenses.toLocaleString()}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Ожидает одобрения
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* Filters */}
-        <Stack direction="row" spacing={2} alignItems="center" mb={2} bgcolor="white" borderRadius={3} p={2}>
-          <TextField
-            placeholder="Поиск..."
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 250 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchNormal1 size={20} color="#9E9E9E" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-              {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
-              {branches.map((branch) => (
-                <MenuItem key={branch} value={branch}>{branch}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Stack>
-
-        {/* Table */}
-        <DataGrid
+        <DataTable
           rows={filteredExpenses}
           columns={columns}
-          pageSizeOptions={[10, 25, 50]}
+          stats={stats}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Поиск..."
+          addButtonText="Добавить расход"
+          onAddClick={() => setAddDialogOpen(true)}
+          renderFilters={renderFilters}
           initialState={{
-            pagination: { paginationModel: { pageSize: 10, page: 0 } },
             sorting: { sortModel: [{ field: "date", sort: "desc" }] },
           }}
-          disableRowSelectionOnClick
         />
 
         {/* Add Expense Dialog */}

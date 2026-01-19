@@ -1,18 +1,15 @@
 import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable } from "@/shared/ui";
 import {
-  Box,
   IconButton,
   Stack,
-  TextField,
-  InputAdornment,
-  Button,
   FormControl,
   Select,
   MenuItem,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Edit2, Trash, SearchNormal1, Add } from "iconsax-react";
+import { Edit2, Trash } from "iconsax-react";
 import type { Branch } from "../types/branches.types";
 
 interface BranchesTableProps {
@@ -162,104 +159,54 @@ export const BranchesTable: React.FC<BranchesTableProps> = ({
     [filteredBranches, onEdit, onDelete, theme]
   );
 
-  return (
-    <Box
-      sx={{
-        bgcolor: "white",
-        borderRadius: 3,
-        border: "1px solid #E0E0E0",
-        p: 2,
-      }}
-    >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Stack direction="row" spacing={2} alignItems="center">
-          <TextField
-            placeholder="Поиск..."
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 250 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchNormal1 size={20} color="#9E9E9E" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <Select
-              value={selectedRegion}
-              onChange={(e) => {
-                setSelectedRegion(e.target.value);
-                setSelectedDistrict("");
-              }}
-              displayEmpty
-            >
-              <MenuItem value="">Все регионы</MenuItem>
-              {regions.map((region) => (
-                <MenuItem key={region} value={region}>
-                  {region}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <Select
-              value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              displayEmpty
-            >
-              <MenuItem value="">Все районы</MenuItem>
-              {districts.map((district) => (
-                <MenuItem key={district} value={district}>
-                  {district}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Stack>
-
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} color="#FFFFFF" />}
-          onClick={onAdd}
+  const renderFilters = () => (
+    <>
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <Select
+          value={selectedRegion}
+          onChange={(e) => {
+            setSelectedRegion(e.target.value);
+            setSelectedDistrict("");
+          }}
+          displayEmpty
         >
-          Добавить
-        </Button>
-      </Stack>
+          <MenuItem value="">Все регионы</MenuItem>
+          {regions.map((region) => (
+            <MenuItem key={region} value={region}>
+              {region}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-      <DataGrid
-        rows={filteredBranches}
-        columns={columns}
-        loading={isLoading}
-        autoHeight
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
-        disableRowSelectionOnClick
-        sx={{
-          border: "none",
-          "& .MuiDataGrid-columnHeaders": {
-            bgcolor: "#F6F6F6",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "1px solid #F0F0F0",
-          },
-        }}
-      />
-    </Box>
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <Select
+          value={selectedDistrict}
+          onChange={(e) => setSelectedDistrict(e.target.value)}
+          displayEmpty
+        >
+          <MenuItem value="">Все районы</MenuItem>
+          {districts.map((district) => (
+            <MenuItem key={district} value={district}>
+              {district}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </>
+  );
+
+  return (
+    <DataTable
+      rows={filteredBranches}
+      columns={columns}
+      loading={isLoading}
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      searchPlaceholder="Поиск..."
+      addButtonText="Добавить"
+      onAddClick={onAdd}
+      renderFilters={renderFilters}
+    />
   );
 };

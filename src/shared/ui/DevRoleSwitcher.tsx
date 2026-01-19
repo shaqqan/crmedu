@@ -15,9 +15,17 @@ import { roleNames, type Role } from "@/shared/config/rbac";
 const demoUsers: Record<Role, { id: string; email: string; name: string }> = {
   ceo: { id: "1", email: "ceo@educrm.uz", name: "Директор Иванов" },
   admin: { id: "2", email: "admin@educrm.uz", name: "Администратор Петрова" },
-  financier: { id: "3", email: "finance@educrm.uz", name: "Финансист Сидорова" },
+  financier: {
+    id: "3",
+    email: "finance@educrm.uz",
+    name: "Финансист Сидорова",
+  },
   mentor: { id: "4", email: "mentor@educrm.uz", name: "Ментор Козлов" },
-  receptionist: { id: "5", email: "reception@educrm.uz", name: "Ресепшионист Морозова" },
+  receptionist: {
+    id: "5",
+    email: "reception@educrm.uz",
+    name: "Ресепшионист Морозова",
+  },
 };
 
 export const DevRoleSwitcher: React.FC = () => {

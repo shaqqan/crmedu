@@ -1,13 +1,11 @@
-import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState, useMemo } from "react";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, StatItem } from "@/shared/ui";
 import {
   Box,
   Stack,
-  TextField,
-  InputAdornment,
   Typography,
   Chip,
-  Button,
   Avatar,
   FormControl,
   Select,
@@ -18,12 +16,10 @@ import {
   DialogActions,
   IconButton,
   InputLabel,
-  Rating,
-  LinearProgress,
+  TextField,
+  Button,
 } from "@mui/material";
 import {
-  SearchNormal1,
-  Add,
   Edit2,
   Trash,
   Eye,
@@ -31,7 +27,6 @@ import {
   Call,
   Sms,
   Building,
-  Book1,
   Profile2User,
   Star1,
   Calendar,
@@ -230,8 +225,67 @@ export const MentorsPage: React.FC = () => {
 
   // Stats
   const activeMentors = mentors.filter((m) => m.status === "active").length;
-  const totalStudents = mentors.reduce((sum, m) => sum + m.studentsCount, 0);
+  const totalStudentsCount = mentors.reduce((sum, m) => sum + m.studentsCount, 0);
   const avgRating = (mentors.reduce((sum, m) => sum + m.rating, 0) / mentors.length).toFixed(1);
+
+  const stats: StatItem[] = [
+    {
+      id: "active",
+      title: "Активных менторов",
+      value: activeMentors,
+      icon: <Profile2User size={20} color="#4CAF50" />,
+      bgColor: "rgba(76, 175, 80, 0.1)",
+    },
+    {
+      id: "students",
+      title: "Всего студентов",
+      value: totalStudentsCount,
+      icon: <Profile2User size={20} color="#1264EB" />,
+      bgColor: "rgba(18, 100, 235, 0.1)",
+    },
+    {
+      id: "rating",
+      title: "Средний рейтинг",
+      value: avgRating,
+      icon: <Star1 size={20} color="#FF9800" variant="Bold" />,
+      bgColor: "rgba(255, 152, 0, 0.1)",
+    },
+  ];
+
+  const renderFilters = () => (
+    <>
+      <FormControl size="small" sx={{ minWidth: 130 }}>
+        <Select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
+          {allLanguages.map((lang) => (
+            <MenuItem key={lang} value={lang}>
+              {lang === "Все" ? "Все языки" : lang}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 160 }}>
+        <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
+          {branches.map((branch) => (
+            <MenuItem key={branch} value={branch}>
+              {branch === "Все" ? "Все филиалы" : branch}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 140 }}>
+        <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <MenuItem value="Все">Все статусы</MenuItem>
+          {statuses.filter((s) => s !== "Все").map((status) => (
+            <MenuItem key={status} value={status}>
+              {statusLabels[status]}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </>
+  );
 
   return (
     <Box>
@@ -244,107 +298,18 @@ export const MentorsPage: React.FC = () => {
             Управление преподавательским составом
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} />}
-          onClick={() => setAddDialogOpen(true)}
-        >
-          Добавить ментора
-        </Button>
       </Stack>
 
-      {/* Stats */}
-      <Stack direction="row" spacing={2} mb={3}>
-        <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, minWidth: 150 }}>
-          <Typography variant="h4" fontWeight={700} color="success.main">
-            {activeMentors}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Активных менторов
-          </Typography>
-        </Box>
-        <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, minWidth: 150 }}>
-          <Typography variant="h4" fontWeight={700} color="primary">
-            {totalStudents}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Всего студентов
-          </Typography>
-        </Box>
-        <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, minWidth: 150 }}>
-          <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Typography variant="h4" fontWeight={700} color="warning.main">
-              {avgRating}
-            </Typography>
-            <Star1 size={20} color="#FF9800" variant="Bold" />
-          </Stack>
-          <Typography variant="caption" color="text.secondary">
-            Средний рейтинг
-          </Typography>
-        </Box>
-      </Stack>
-
-      {/* Filters */}
-      <Stack direction="row" spacing={2} alignItems="center" mb={2} bgcolor="white" borderRadius={3} p={2}>
-        <TextField
-          placeholder="Поиск по имени, email, телефону..."
-          size="small"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 280 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchNormal1 size={20} color="#9E9E9E" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
-        <FormControl size="small" sx={{ minWidth: 130 }}>
-          <Select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
-            {allLanguages.map((lang) => (
-              <MenuItem key={lang} value={lang}>
-                {lang === "Все" ? "Все языки" : lang}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" sx={{ minWidth: 160 }}>
-          <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
-            {branches.map((branch) => (
-              <MenuItem key={branch} value={branch}>
-                {branch === "Все" ? "Все филиалы" : branch}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" sx={{ minWidth: 140 }}>
-          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <MenuItem value="Все">Все статусы</MenuItem>
-            {statuses.filter((s) => s !== "Все").map((status) => (
-              <MenuItem key={status} value={status}>
-                {statusLabels[status]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
-
-      {/* Table */}
-      <DataGrid
+      <DataTable
         rows={filteredMentors}
         columns={columns}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10, page: 0 } },
-        }}
-        disableRowSelectionOnClick
-        sx={{ bgcolor: "white", borderRadius: 3 }}
+        stats={stats}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Поиск по имени, email, телефону..."
+        addButtonText="Добавить ментора"
+        onAddClick={() => setAddDialogOpen(true)}
+        renderFilters={renderFilters}
       />
 
       {/* Mentor Details Dialog */}

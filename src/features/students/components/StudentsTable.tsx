@@ -1,19 +1,16 @@
 import React, { useState, useMemo } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import { DataTable } from "@/shared/ui";
 import {
-  Box,
   IconButton,
   Stack,
-  TextField,
-  InputAdornment,
-  Button,
   FormControl,
   Select,
   MenuItem,
   Chip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Edit2, Trash, SearchNormal1, Add, Eye } from "iconsax-react";
+import { Edit2, Trash, Eye } from "iconsax-react";
 import type { Student, StudentStatus } from "../types/students.types";
 
 interface StudentsTableProps {
@@ -183,105 +180,54 @@ export const StudentsTable: React.FC<StudentsTableProps> = ({
     }));
   }, [students]);
 
-  return (
-    <Box
-      sx={{
-        bgcolor: "white",
-        borderRadius: 3,
-        border: "1px solid #E0E0E0",
-        p: 2,
-      }}
-    >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-        flexWrap="wrap"
-        gap={2}
-      >
-        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-          <TextField
-            placeholder="Поиск по ФИО или телефону..."
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 280 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchNormal1 size={20} color="#9E9E9E" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <Select
-              value={branchFilter}
-              onChange={(e) =>
-                setBranchFilter(e.target.value as number | "all")
-              }
-              displayEmpty
-            >
-              <MenuItem value="all">Все филиалы</MenuItem>
-              {branches.map((b) => (
-                <MenuItem key={b.id} value={b.id}>
-                  {b.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <Select
-              value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as StudentStatus | "all")
-              }
-              displayEmpty
-            >
-              <MenuItem value="all">Все статусы</MenuItem>
-              <MenuItem value="active">Активные</MenuItem>
-              <MenuItem value="frozen">Замороженные</MenuItem>
-              <MenuItem value="graduated">Выпускники</MenuItem>
-              <MenuItem value="left">Ушедшие</MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
-
-        <Button
-          variant="contained"
-          startIcon={<Add size={20} color="#FFFFFF" />}
-          onClick={onAdd}
+  const renderFilters = () => (
+    <>
+      <FormControl size="small" sx={{ minWidth: 140 }}>
+        <Select
+          value={branchFilter}
+          onChange={(e) =>
+            setBranchFilter(e.target.value as number | "all")
+          }
+          displayEmpty
         >
-          Добавить
-        </Button>
-      </Stack>
+          <MenuItem value="all">Все филиалы</MenuItem>
+          {branches.map((b) => (
+            <MenuItem key={b.id} value={b.id}>
+              {b.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-      <DataGrid
-        rows={filteredStudents}
-        columns={columns}
-        loading={isLoading}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
-        disableRowSelectionOnClick
-        sx={{
-          border: "none",
-          "& .MuiDataGrid-columnHeaders": {
-            bgcolor: "#F1F3F5",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "1px solid #F0F0F0",
-          },
-        }}
-      />
-    </Box>
+      <FormControl size="small" sx={{ minWidth: 140 }}>
+        <Select
+          value={statusFilter}
+          onChange={(e) =>
+            setStatusFilter(e.target.value as StudentStatus | "all")
+          }
+          displayEmpty
+        >
+          <MenuItem value="all">Все статусы</MenuItem>
+          <MenuItem value="active">Активные</MenuItem>
+          <MenuItem value="frozen">Замороженные</MenuItem>
+          <MenuItem value="graduated">Выпускники</MenuItem>
+          <MenuItem value="left">Ушедшие</MenuItem>
+        </Select>
+      </FormControl>
+    </>
+  );
+
+  return (
+    <DataTable
+      rows={filteredStudents}
+      columns={columns}
+      loading={isLoading}
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      searchPlaceholder="Поиск по ФИО или телефону..."
+      addButtonText="Добавить"
+      onAddClick={onAdd}
+      renderFilters={renderFilters}
+    />
   );
 };
